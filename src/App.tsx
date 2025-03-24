@@ -1,6 +1,35 @@
 import { useMemo, useState } from "react";
 import { shuffle } from "lodash";
 
+function getCharsOfTypes(
+  isUppercase: boolean,
+  isLowercase: boolean,
+  isNumeric: boolean,
+  isSpecial: boolean
+) {
+  const uppercaseChar = isUppercase
+    ? String.fromCharCode(65 + Math.ceil(Math.random() * 25))
+    : "";
+  const lowercaseChar = isLowercase
+    ? String.fromCharCode(97 + Math.ceil(Math.random() * 25))
+    : "";
+  const numChar = isNumeric
+    ? String.fromCharCode(48 + Math.ceil(Math.random() * 9))
+    : "";
+  const specialCharArr = [
+    String.fromCharCode(32 + Math.ceil(Math.random() * 15)),
+    String.fromCharCode(58 + Math.ceil(Math.random() * 6)),
+    String.fromCharCode(91 + Math.ceil(Math.random() * 5)),
+    String.fromCharCode(123 + Math.ceil(Math.random() * 3)),
+  ];
+  const specialChar = isSpecial
+    ? specialCharArr[Math.floor(Math.random() * specialCharArr.length)]
+    : "";
+  return Array.from(
+    uppercaseChar + lowercaseChar + numChar + specialChar
+  ).filter(Boolean);
+}
+
 export default function App() {
   const [rangeInputValue, setRangeInputValue] = useState(5);
   const [uppercaseCheckboxValue, setUppercaseCheckboxValue] = useState(false);
@@ -10,34 +39,28 @@ export default function App() {
   const [numCharCheckboxValue, setNumCharCheckboxValue] = useState(false);
   // Generated password
   const generatedPassword = useMemo<string>(() => {
-    let pwStr = "";
-    for (let i = 0; i < rangeInputValue; i++) {
-      const uppercaseChar = uppercaseCheckboxValue
-        ? String.fromCharCode(65 + Math.ceil(Math.random() * 25))
-        : "";
-      const lowercaseChar = lowercaseCheckboxValue
-        ? String.fromCharCode(97 + Math.ceil(Math.random() * 25))
-        : "";
-      const numChar = numCharCheckboxValue
-        ? String.fromCharCode(48 + Math.ceil(Math.random() * 9))
-        : "";
-      const specialCharArr = [
-        String.fromCharCode(32 + Math.ceil(Math.random() * 15)),
-        String.fromCharCode(58 + Math.ceil(Math.random() * 6)),
-        String.fromCharCode(91 + Math.ceil(Math.random() * 5)),
-        String.fromCharCode(123 + Math.ceil(Math.random() * 3)),
-      ];
-      const specialChar = specialCharCheckboxValue
-        ? specialCharArr[Math.floor(Math.random() * specialCharArr.length)]
-        : "";
-      const shuffledCharArr = shuffle(
-        uppercaseChar + lowercaseChar + numChar + specialChar
-      ).filter((c) => c !== "");
-      let j =
-        i - shuffledCharArr.length * Math.floor(i / shuffledCharArr.length);
-      pwStr += shuffledCharArr[j];
+    let pwStrArr = [];
+    /******************/
+    let charArr = getCharsOfTypes(
+      uppercaseCheckboxValue,
+      lowercaseCheckboxValue,
+      numCharCheckboxValue,
+      specialCharCheckboxValue
+    );
+    pwStrArr.push(...charArr);
+    /****************/
+    let loopLen = rangeInputValue - pwStrArr.length;
+    for (let i = 0; i < loopLen; i++) {
+      charArr = getCharsOfTypes(
+        uppercaseCheckboxValue,
+        lowercaseCheckboxValue,
+        numCharCheckboxValue,
+        specialCharCheckboxValue
+      );
+      let j = i - charArr.length * Math.floor(i / charArr.length);
+      pwStrArr.push(charArr[j]);
     }
-    return pwStr;
+    return shuffle(pwStrArr).join("");
   }, [
     rangeInputValue,
     uppercaseCheckboxValue,
@@ -56,6 +79,8 @@ export default function App() {
               <label>Password length: {rangeInputValue}</label>
               <input
                 type="range"
+                role="slider"
+                aria-label="Password Length Range Slider"
                 min={5}
                 max={20}
                 value={rangeInputValue}
@@ -124,7 +149,9 @@ export default function App() {
             {/* Generated password */}
             <div>
               <span className="font-bold">Generated password:</span>{" "}
-              {generatedPassword}
+              <span aria-label="Generated Password Value">
+                {generatedPassword}
+              </span>
             </div>
           </div>
         </form>
