@@ -233,4 +233,20 @@ describe("App", () => {
       )
     ).toBe(true);
   });
+  //
+  it("generates an empty string when none of the checkboxes are checked", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    const [rangeInput, _, lowercaseCheckboxInput] = getInputElements();
+    const generatedPasswordElement = screen.getByLabelText(
+      /generated password value/i
+    );
+
+    expect(rangeInput).toHaveValue("5");
+    //
+    await user.click(lowercaseCheckboxInput);
+    expect(lowercaseCheckboxInput).not.toBeChecked();
+    expect(generatedPasswordElement.textContent).toHaveLength(0);
+    expect(generatedPasswordElement).toHaveTextContent("");
+  });
 });
