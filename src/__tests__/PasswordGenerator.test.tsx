@@ -1,7 +1,7 @@
 import { screen, fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
-import App from "../App";
+import PasswordGenerator from "../components/PasswordGenerator";
 
 const getInputElements = () => {
   const rangeInput = screen.getByRole("slider", {
@@ -28,7 +28,7 @@ const getInputElements = () => {
 
 describe("App", () => {
   it("presents different settings / options to allow the user to generate password of various lengths and of different complexities", () => {
-    render(<App />);
+    render(<PasswordGenerator />);
     const [
       rangeInput,
       uppercaseCheckboxInput,
@@ -60,7 +60,7 @@ describe("App", () => {
   });
   //
   it("adjusts generated password length based on current range input value", () => {
-    render(<App />);
+    render(<PasswordGenerator />);
     const [rangeInput, _, lowercaseCheckboxInput] = getInputElements();
     const generatedPasswordElement = screen.getByLabelText(
       /generated password value/i
@@ -75,7 +75,7 @@ describe("App", () => {
   });
   //
   it("generates a password that includes lowercase characters only when the lowercase checkbox is checked (default state)", () => {
-    render(<App />);
+    render(<PasswordGenerator />);
     const [
       rangeInput,
       uppercaseCheckboxInput,
@@ -104,7 +104,7 @@ describe("App", () => {
   //
   it("generates a password that includes uppercase characters only when the uppercase checkbox is checked", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<PasswordGenerator />);
     const [
       rangeInput,
       uppercaseCheckboxInput,
@@ -138,7 +138,7 @@ describe("App", () => {
   //
   it("generated a password that includes special characters only when the special characters checkbox is checked", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<PasswordGenerator />);
 
     const [
       rangeInput,
@@ -170,7 +170,7 @@ describe("App", () => {
   //
   it("generated a password that includes numeric characters only when the numbers checkbox is checked", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<PasswordGenerator />);
 
     const [
       rangeInput,
@@ -202,7 +202,7 @@ describe("App", () => {
   //
   it("generates a password that includes at least one character type when all char-type checkboxes are checked", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<PasswordGenerator />);
     const [
       rangeInput,
       uppercaseCheckboxInput,
@@ -236,7 +236,7 @@ describe("App", () => {
   //
   it("generates an empty string when none of the checkboxes are checked", async () => {
     const user = userEvent.setup();
-    render(<App />);
+    render(<PasswordGenerator />);
     const [rangeInput, _, lowercaseCheckboxInput] = getInputElements();
     const generatedPasswordElement = screen.getByLabelText(
       /generated password value/i
